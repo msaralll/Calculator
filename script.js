@@ -2,6 +2,9 @@ const display = document.querySelector(".calculator-input");
 const keys = document.querySelector(".calculator-keys");
 
 let displayValue = "0"; // Başlangıç Değerimizi 0 Yaptık.
+let firstValue = null;
+let operator = null;
+let waitingForSecondValue = false;
 
 function updateDisplay() {
   display.value = displayValue;
@@ -15,7 +18,9 @@ keys.addEventListener("click", function (e) {
   if (!element.matches("button")) return; // Sadece Butonlara click atmak istedğimiz için elementlerde target'ı button olmayanları yazdırmadık return ederek de devamını getirtmedik.
 
   if (element.classList.contains("operator")) {
-    console.log("operator", element.value);
+    // console.log("operator", element.value);
+    handleOperator(element.value);
+    updateDisplay();
     return;
   }
   if (element.classList.contains("decimal")) {
@@ -36,9 +41,43 @@ keys.addEventListener("click", function (e) {
   updateDisplay();
 });
 
+function handleOperator(nextOperator) {
+  const value = parseFloat(displayValue);
+
+  if (firstValue === null) {
+    firstValue = value;
+  } else if (operator) {
+    const result = calculate(firstValue, value, operator);
+
+    displayValue = `${parseFloat(result.toFixed(7))}`;
+    firstValue = result;
+  }
+
+  waitingForSecondValue = true;
+  operator = nextOperator;
+}
+
 function inputNumber(num) {
-  displayValue = displayValue === "0" ? num : displayValue + num;
-} // Değerimiz 0 ise clicklediğimiz sayıyı ekrana yazdırıyoruz eğer değilse ekrandaki sayının yanına clicklediğimiz numarayı ekliyoruz.
+  if (waitingForSecondValue) {
+    displayValue = num;
+    waitingForSecondValue = false;
+  } else {
+    displayValue = displayValue === "0" ? num : displayValue + num; // Değerimiz 0 ise clicklediğimiz sayıyı ekrana yazdırıyoruz eğer değilse ekrandaki sayının yanına clicklediğimiz numarayı ekliyoruz.
+  }
+}
+
+function calculate(first, second, operator) {
+  if (operator === "+") {
+    return first + second;
+  } else if (operator === "-") {
+    return first - second;
+  } else if (operator === "*") {
+    return first * second;
+  } else if (operator === "/") {
+    return first / second;
+  }
+  return second;
+}
 
 function inputDecimal() {
   if (!displayValue.includes(".")) {
