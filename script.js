@@ -14,30 +14,28 @@ updateDisplay(); // Fonksiyonu Çalıştırdık.
 
 keys.addEventListener("click", function (e) {
   const element = e.target;
+  const value = element.value;
 
   if (!element.matches("button")) return; // Sadece Butonlara click atmak istedğimiz için elementlerde target'ı button olmayanları yazdırmadık return ederek de devamını getirtmedik.
 
-  if (element.classList.contains("operator")) {
-    // console.log("operator", element.value);
-    handleOperator(element.value);
-    updateDisplay();
-    return;
+  switch (value) {
+    case "+":
+    case "-":
+    case "*":
+    case "/":
+    case "=":
+      handleOperator(value);
+      break;
+    case ".":
+      inputDecimal();
+      break;
+    case "clear":
+      clear();
+      break;
+    default:
+      inputNumber(value);
   }
-  if (element.classList.contains("decimal")) {
-    // console.log("decimal", element.value);
-    inputDecimal();
-    updateDisplay();
-    return;
-  }
-  if (element.classList.contains("clear")) {
-    // console.log("clear", element.value);
-    clear();
-    updateDisplay();
-    return;
-  }
-  //   console.log("number", element.value);
 
-  inputNumber(element.value);
   updateDisplay();
 });
 
